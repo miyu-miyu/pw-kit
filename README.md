@@ -4,10 +4,10 @@ Playwright 开发者工具套件 — Python 库 + AI Skill。
 
 pw-kit 包含两个组件：
 
-| 组件 | 说明 |
-|---|---|
-| **pw-kit Python 库** | 本地源码安装 (`pip install -e .`)，提供 Playwright 真正缺失的工具函数 |
-| **pw-automator Skill** | opencode Skill，为 AI 开发者提供浏览器自动化方法论指导 |
+| 组件                         | 说明                                                                    |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| **pw-kit Python 库**   | 本地源码安装 (`pip install -e .`)，提供 Playwright 真正缺失的工具函数 |
+| **pw-automator Skill** | opencode Skill，为 AI 开发者提供浏览器自动化方法论指导                  |
 
 核心原则：**只做 Playwright 缺失的，不做 Playwright 已有的**。Playwright 已经做得很好的（导航、点击、输入、等待、断言、截图），直接用 Playwright API。pw-kit 针对特有的工作环境添加了一些可能用得到的接口，简化自动化流程的编写。
 
@@ -132,6 +132,10 @@ page = context.new_page()
 
 更多 codegen 用法见 [Playwright Codegen 官方文档](https://playwright.dev/python/docs/codegen)。
 
+### Playwright Python API
+
+优化录制脚本时，参考 [Playwright Python API 文档](https://playwright.net.cn/python/docs/api/class-playwright) 查找 `get_by_role`、`get_by_text`、`expect` 等语义定位和断言方法。
+
 ---
 
 ## pw-kit Python 库
@@ -149,14 +153,14 @@ pw-kit 就是这些问题的答案。
 
 ### API 一览
 
-| 函数 | 说明 |
-|---|---|
+| 函数                                                                       | 说明                                                                                                     |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | `extract_download_urls(page, strategy, selector, expr, scope, keywords)` | 多策略下载链接提取（css/js/semantic/auto）。`auto` 策略按 css→js→semantic 级联尝试，返回首个非空结果 |
-| `discover_elements(page, tags, scope)` | 元素发现 + 选择器唯一性评级（★/○） |
-| `click_with_offset(page, selector, max_retries)` | 被遮挡时 CDP 偏移重试点击 |
-| `schedule_run(script_path, time, mode, log_path)` | 生成 cron/daemon 定时配置 |
-| `is_stable_class(class_name)` | 判断 class 是否框架生成 |
-| `filter_stable_classes(class_list)` | 过滤框架生成的 class |
+| `discover_elements(page, tags, scope)`                                   | 元素发现 + 选择器唯一性评级（★/○）                                                                     |
+| `click_with_offset(page, selector, max_retries)`                         | 被遮挡时 CDP 偏移重试点击                                                                                |
+| `schedule_run(script_path, time, mode, log_path)`                        | 生成 cron/daemon 定时配置                                                                                |
+| `is_stable_class(class_name)`                                            | 判断 class 是否框架生成                                                                                  |
+| `filter_stable_classes(class_list)`                                      | 过滤框架生成的 class                                                                                     |
 
 函数详解、参数说明、示例代码见 [API.md](docs/API.md)。
 
@@ -260,13 +264,13 @@ skills/pw-automator/
 
 Playwright 内置了操作前检查机制。每次 `click`/`fill`/`check` 前，自动验证：
 
-| 检查项 | 说明 |
-|---|---|
-| Visible | 元素可见（非 display:none、非 visibility:hidden） |
-| Stable | 元素停止运动（位置/大小不再变化） |
-| Receives Events | 元素没有被其他元素完全遮挡 |
-| Enabled | 元素可用（非 disabled） |
-| Editable | 输入框可编辑（非 readonly、非 disabled） |
+| 检查项          | 说明                                              |
+| --------------- | ------------------------------------------------- |
+| Visible         | 元素可见（非 display:none、非 visibility:hidden） |
+| Stable          | 元素停止运动（位置/大小不再变化）                 |
+| Receives Events | 元素没有被其他元素完全遮挡                        |
+| Enabled         | 元素可用（非 disabled）                           |
+| Editable        | 输入框可编辑（非 readonly、非 disabled）          |
 
 **pw-kit 不重复封装这套机制。** 你不需要用 pw-kit 做"元素是否可见"这种检查 — Playwright 自动做了。
 
@@ -283,6 +287,7 @@ pw-kit/
 ├── pyproject.toml                   # 项目配置 + 依赖声明（唯一依赖来源）
 ├── docs/
 │   ├── INSTALL.md                   # 安装指南（各平台）
+│   ├── LOCATORS.md                  # Playwright 元素定位指南（CSS 选择器 + 语义定位）
 │   └── API.md                       # 函数详解、参数说明、示例代码
 ├── src/pw_kit/                      # Python 库源码
 │   ├── __init__.py                  # 包入口，导出所有公共函数
@@ -320,7 +325,7 @@ from pw_kit import extract_download_urls         # pw-kit
 - 等待策略（codegen 用固定 timeout，应该用 wait_for_selector）
 - 异常处理（codegen 不生成容错逻辑）
 
-pw-automator Skill 帮你分析这些问题，pw-kit 工具函数帮你解决。
+pw-automator Skill 帮你分析这些问题，pw-kit 工具函数帮你解决。优化时可参考 [Playwright Python API 文档](https://playwright.net.cn/python/docs/api/class-playwright) 选择更稳定的定位和等待方式
 
 ### headless 模式怎么用？
 

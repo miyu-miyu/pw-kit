@@ -2,6 +2,8 @@
 
 本文件是 pw-automator Skill 的参考文件，当需要查 Playwright API 时读取。
 
+元素定位和 CSS 选择器详解见 [LOCATORS.md](../../docs/LOCATORS.md)。
+
 ## Page 常用操作
 
 ```python
