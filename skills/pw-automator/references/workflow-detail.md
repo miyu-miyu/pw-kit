@@ -107,9 +107,18 @@ page.wait_for_load_state()     →  阶段B+3: 网络请求完成后
 
 使用 `templates/page_analyze.py` 中的 `scan()` 函数，按脚本步骤生成分阶段脚本让用户运行。每个关键操作后调用 `scan()`，所有 wait 操作结束后也调用 `scan()`。
 
-**方式 B: AI 用 Playwright MCP 逐步操作+分析**
+**方式 B: AI 用 pw-kit CLI 逐步分析**
 
-每执行一步操作后立即扫描页面，实时对比变化。最理想的方式 — 自动发现每一步后的页面变化。
+AI 逐步生成 pw-kit Python 脚本片段，通过 bash 执行并读取输出。每段脚本使用 `discover_elements()` 和 `extract_download_urls()` 扫描页面，输出元素和下载链接数据。AI 读取输出后决定下一步操作，再生成下一段脚本。
+
+操作流程:
+1. AI 生成阶段1脚本（goto + scan）→ bash 执行 → 读取输出
+2. AI 根据输出决定下一步 → 生成阶段2脚本（click/fill + scan）→ bash 执行 → 读取输出
+3. 重复直到所有阶段分析完成
+
+⚠️ 每段脚本需要启动浏览器，效率低于方式 A（一次性运行）。但优势是 AI 可以根据每步的输出实时调整分析策略。
+
+如果环境配置了 Playwright MCP（opencode 的 `/playwright` skill），也可以用 MCP 逐步操控浏览器。但 MCP 无法调用 pw-kit 函数（`discover_elements`、`extract_download_urls`），只能用 `browser_snapshot` 获取 accessibility tree — 分析深度不如 pw-kit CLI 方式。
 
 **方式 C: 用户截图**
 
