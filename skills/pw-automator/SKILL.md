@@ -32,9 +32,9 @@ expect(page.get_by_text("提交成功")).to_be_visible(timeout=5000)
 | 4 | 逐行标注风险 | 结合页面数据标注风险等级 | → 读取 `references/workflow-detail.md` Step 4 |
 | 5 | 询问用户 | 附页面证据，列出真实选项 | → 读取 `references/workflow-detail.md` Step 5 |
 | 6 | 给出替换方案 | 每个方案标注依据来源 | → 读取 `references/workflow-detail.md` Step 6 |
-| 7 | 生成最终脚本 | 应用所有确认的替换 | — |
+| 7 | 生成最终脚本 | 应用所有确认的替换 | → 读取 `references/workflow-detail.md` Step 7 |
 
-**步骤 2 和 3 的详细操作方式、脚本模板、页面变化对比规则** 都在 `references/workflow-detail.md`。遇到这两个步骤时，必须读取该文件获取完整指令。
+**步骤 2 和 3 的详细操作方式、脚本模板、页面变化对比规则** 都在 `references/workflow-detail.md`。遇到这些步骤时，必须读取该文件获取完整指令。
 
 ---
 
@@ -100,7 +100,7 @@ codegen 无法生成的 5 种模式（从脚本分析中发现）。完整代码
 
 ## 附加功能: 定时执行
 
-⚠️ **这不是从codegen脚本中能分析出的模式** — codegen只记录浏览器操作，不会产生任何"定时运行"的线索。只有当用户明确提出"定时运行"诉求时才使用。
+⚠️ **这不是从codegen脚本中能分析出的模式** — codegen只记录浏览器操作，不会产生任何"定时运行"的线索。**步骤 7 生成最终脚本后，主动询问用户是否需要定时执行。** 只有当用户确认需要时才使用。
 
 `schedule_run(script_path, time, mode)` → 生成 cron/daemon 配置文本。详细说明: 读取 `references/patterns.md` 定时执行章节
 

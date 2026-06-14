@@ -129,7 +129,7 @@ Step 3 (page analysis) is **multi-stage**: for each `page.goto()` in the script,
 - **Two-step install is mandatory** — `pip install -e .` alone won't work; browsers must be installed separately
 - **`test/` vs `tests/` mismatch** — pytest won't find tests unless you fix `testpaths` in pyproject.toml or pass the path explicitly (`pytest test/`)
 - **`schedule_run` does NOT execute scheduling** — it only generates config strings. Don't confuse it with an actual scheduler
-- **`schedule_run` is NOT discoverable from script analysis** — codegen only records browser interactions, no "schedule" signals exist in codegen scripts. Only suggest `schedule_run` when the user explicitly requests scheduled/periodic execution
+- **`schedule_run` is NOT discoverable from script analysis** — codegen only records browser interactions, no "schedule" signals exist in codegen scripts. Step 7 should **proactively ask the user** whether they need scheduled execution after generating the final script
 - **CDP session lifecycle** — `offset.py` opens CDP sessions and detaches in `finally`. Any new CDP usage must follow this pattern
 - **`find_by_semantic_keywords` is internal** — not in `__all__`, don't expose it as public API
 - **`FRAMEWORK_CLASS_PATTERN` is exported** — it IS in `__all__`, agents can use it directly
