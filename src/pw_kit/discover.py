@@ -15,8 +15,7 @@ from .filters import is_stable_class
 _DEFAULT_TAGS = ["input", "select", "button", "textarea", "a"]
 
 # JS snippet executed inside the browser to extract element properties.
-_PROPS_JS = """() => {
-    const el = this;
+_PROPS_JS = """(el) => {
     const rect = el.getBoundingClientRect();
     const text = (el.textContent || '').trim().slice(0, 80);
     const classes = Array.from(el.classList);
@@ -36,8 +35,7 @@ _PROPS_JS = """() => {
 }"""
 
 # JS snippet to compute the nth-child path from root to a given element.
-_NTH_PATH_JS = """() => {
-    const el = this;
+_NTH_PATH_JS = """(el) => {
     const parts = [];
     let node = el;
     while (node && node.parentElement) {

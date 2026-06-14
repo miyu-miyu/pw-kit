@@ -71,6 +71,8 @@ Multiple modules embed JS strings and evaluate them via `page.evaluate()`:
 
 When writing new extraction/discovery features, follow this pattern: embed JS as a module-level constant string, escape selector/parameter injection via `json.dumps()`.
 
+**⚠️ Critical: Playwright `Locator.evaluate()` does NOT bind `this` to the target element.** JS snippets must use `(el) => { ... }` pattern where `el` is the first argument (Playwright passes the element as the first arg). Never use `() => { const el = this; ... }` — `this` will be `undefined`, causing `TypeError: el.getBoundingClientRect is not a function`. This was the root cause of `discover_elements()` returning 0 results on all pages.
+
 ### sync_api only
 
 pw-kit exclusively uses `playwright.sync_api`. No async support. All public functions take a `sync_api.Page` object.
