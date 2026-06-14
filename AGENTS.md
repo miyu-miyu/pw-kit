@@ -103,9 +103,14 @@ This is an opencode Skill, NOT part of the Python library. Structure:
 
 ```
 skills/pw-automator/
-├── SKILL.md                          # Skill definition (triggers, workflow, rules)
-├── references/playwright-api.md      # Playwright API quick reference
-└── templates/                        # 5 automation task templates
+├── SKILL.md                          # Skill definition (132 lines, 7-step workflow overview)
+├── references/
+│   ├── workflow-detail.md            # Detailed Step 2-6 instructions + wait operation triggers
+│   ├── patterns.md                   # 5 script-analysis patterns + 1 user-request add-on (scheduled run)
+│   ├── locators.md                    # Playwright element locating guide (copied from docs/LOCATORS.md)
+│   └── playwright-api.md            # Playwright API quick reference
+└── templates/                        # 6 automation task templates
+    ├── page_analyze.py               # Step 3: multi-stage page analysis (includes wait awareness)
     ├── simple_download.py
     ├── iterate_table.py
     ├── branch_download.py
@@ -115,12 +120,22 @@ skills/pw-automator/
 
 Templates are standalone scripts that users copy into their projects. Each has a header comment describing its use case. They import from `pw_kit`, so the library must be installed first.
 
+The pw-automator workflow now has 7 steps: receive script → **execute validation** → **page analysis** → risk marking → ask user → suggest replacements → generate final script. Steps 2 and 3 are mandatory — the Skill must verify the codegen script can run and must analyze the target webpage before suggesting optimizations.
+
+Step 3 (page analysis) is **multi-stage**: for each `page.goto()` in the script, create a new scan stage; for each click/fill that changes the DOM (without changing URL), create a sub-stage; for each `wait_for_timeout`/`wait_for_load_state`/`wait_for_url`/`wait_for_selector`/`wait_for_function`, create a sub-stage after the wait completes. This captures URL navigation, in-page DOM mutations (AJAX, SPA), and post-wait DOM changes.
+
 ## Things agents often miss
 
 - **Two-step install is mandatory** — `pip install -e .` alone won't work; browsers must be installed separately
 - **`test/` vs `tests/` mismatch** — pytest won't find tests unless you fix `testpaths` in pyproject.toml or pass the path explicitly (`pytest test/`)
 - **`schedule_run` does NOT execute scheduling** — it only generates config strings. Don't confuse it with an actual scheduler
+- **`schedule_run` is NOT discoverable from script analysis** — codegen only records browser interactions, no "schedule" signals exist in codegen scripts. Only suggest `schedule_run` when the user explicitly requests scheduled/periodic execution
 - **CDP session lifecycle** — `offset.py` opens CDP sessions and detaches in `finally`. Any new CDP usage must follow this pattern
 - **`find_by_semantic_keywords` is internal** — not in `__all__`, don't expose it as public API
 - **`FRAMEWORK_CLASS_PATTERN` is exported** — it IS in `__all__`, agents can use it directly
 - **daemon mode needs extra install** — `pip install pw-kit[schedule]` or `pip install -e ".[schedule]"`
+- **pw-automator must verify script execution** — Step 2: run the codegen script first, see if it works. If not, analyze the failure before optimizing
+- **pw-automator must analyze the target webpage** — Step 3: use `discover_elements()` and `extract_download_urls()` to see what's actually on the page. Optimizations without page data may suggest elements/text that don't exist
+- **Cannot guess wait conditions** — if `wait_for_timeout` appears and page data isn't available, must ask the user what to wait for, not guess
+- **Wait operations also trigger page structure changes** — `wait_for_timeout`/`wait_for_load_state`/`wait_for_url`/`wait_for_selector`/`wait_for_function` all mean the page is changing. After each wait completes, scan the page again — DOM may have updated during the wait
+- **SKILL.md uses progressive disclosure** — core workflow stays in SKILL.md (~132 lines), detailed step instructions and pattern library moved to `references/workflow-detail.md` and `references/patterns.md`. SKILL.md points to these files at the relevant steps

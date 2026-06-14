@@ -246,9 +246,10 @@ cp -r skills/pw-automator ~/.config/opencode/skills/
 
 ```
 skills/pw-automator/
-├── SKILL.md                          # Skill 定义和 AI 分析师指令
+├── SKILL.md                          # Skill 定义（7步工作流: 验证执行→页面分析→风险标注→优化）
 ├── references/playwright-api.md      # Playwright API 快速参考
 └── templates/                        # 自动化任务模板（可直接复制使用）
+    ├── page_analyze.py               # 页面分析脚本（发现真实元素和下载链接）
     ├── simple_download.py            # 单页面下载提取
     ├── iterate_table.py              # 遍历表格逐行处理
     ├── branch_download.py            # 条件分支下载
